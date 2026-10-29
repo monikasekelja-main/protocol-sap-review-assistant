@@ -107,6 +107,7 @@ def editing_options(finding, maps=None):
     saved = {
         e["block_id"]: e for e in getattr(getattr(finding, "edit_decision", None), "edits", [])
     }
+    documents = {d.pk: d for d in finding.review.documents.all()}
     for index, evidence in enumerate(finding.evidence):
         error, editable, after = "", False, ""
         try:
@@ -124,6 +125,9 @@ def editing_options(finding, maps=None):
             after = saved[evidence["block_id"]]["after"]
         options.append(
             {
+                "role": documents[evidence["document_id"]].get_role_display()
+                if evidence["document_id"] in documents
+                else "Source document",
                 "index": index,
                 "evidence": evidence,
                 "editable": editable,

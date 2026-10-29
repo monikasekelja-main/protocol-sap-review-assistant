@@ -55,6 +55,9 @@ class GuidedReviewTests(ReviewFixture, TestCase):
         response = self.client.get(reverse("guide", args=[self.review.pk]))
         self.assertContains(response, "Issue 1 of 3")
         self.assertContains(response, "Accept edit")
+        self.assertContains(response, 'class="doc-role">Protocol</strong>')
+        self.assertContains(response, 'class="doc-role">SAP</strong>')
+        self.assertContains(response, "Change this passage in the SAP")
         self.assertEqual(
             self.accept(
                 text="The primary endpoint is change from baseline in fatigue score at Week 12."
@@ -75,6 +78,9 @@ class GuidedReviewTests(ReviewFixture, TestCase):
         self.assertEqual(response.status_code, 302)
         self.review.refresh_from_db()
         self.assertEqual(self.review.finalised_revision, self.review.revision)
+        final_page = self.client.get(response.url)
+        self.assertContains(final_page, "Done — return to your documents")
+        self.assertContains(final_page, "Your review and approved documents are saved")
         result = self.client.get(url)
         self.assertEqual(result.status_code, 200)
         exported = WordDocument(io.BytesIO(b"".join(result.streaming_content)))

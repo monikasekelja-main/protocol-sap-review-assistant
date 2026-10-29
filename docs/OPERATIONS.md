@@ -26,7 +26,7 @@ The original PRD excluded source editing; this workflow implements the user's su
 
 ## Processes and recovery
 
-Run the web process and `python manage.py review_worker` against the same database and private filesystem. One SQLite worker only. PostgreSQL workers claim with `SELECT FOR UPDATE SKIP LOCKED`, then compare-and-set the queued state. Jobs have a ten-minute lease and fence publication with a unique token. Parsing and model requests have shorter bounded timeouts. An expired job is marked failed when a worker polls; retry from the UI starts a new run. There is no automatic repeated provider billing or infinite retry loop.
+The development `runserver` command starts and stops its own worker (use `--no-worker` if managing one separately). Production web servers do not. Run the production web process and `python manage.py review_worker` against the same database and private filesystem. One SQLite worker only. PostgreSQL workers claim with `SELECT FOR UPDATE SKIP LOCKED`, then compare-and-set the queued state. Jobs have a ten-minute lease and fence publication with a unique token. Parsing and model requests have shorter bounded timeouts. An expired job is marked failed when a worker polls; retry from the UI starts a new run. There is no automatic repeated provider billing or infinite retry loop.
 
 Parsing runs in a child process with a minimal environment, a 45-second CPU limit and 60-second parent timeout. Linux additionally applies a 1.5 GB address-space cap. macOS rejects address-space limits, so enforce memory at the container/host boundary for hosted use. A subprocess is **not** a complete security sandbox: isolate parser egress and filesystem access at the host/container layer before accepting external partner files.
 

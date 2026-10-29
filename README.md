@@ -32,17 +32,12 @@ You need **Python 3.12+** and [uv](https://docs.astral.sh/uv/getting-started/ins
 uv sync --frozen
 uv run python manage.py migrate
 uv run python manage.py seed_demo
-uv run python manage.py review_worker --once
 uv run python manage.py runserver 127.0.0.1:8000
 ```
 
 Open **[localhost:8000](http://127.0.0.1:8000)**. Sign in as `demo` using the generated password printed by `seed_demo`. The demo includes a synthetic study with three deliberate discrepancies.
 
-To process uploads and new runs, leave the worker running in a **second terminal**:
-
-```sh
-uv run python manage.py review_worker
-```
+The development server starts the review worker automatically, including for uploads and new runs. Stop the server to stop its worker. If you already run a separate worker, use `runserver --no-worker` to avoid starting another one. Hosted deployments still need a separate worker.
 
 Local development uses SQLite and one worker. Running `seed_demo` again preserves the existing account and review. To reset its password:
 
