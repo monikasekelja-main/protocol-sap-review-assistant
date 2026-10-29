@@ -97,6 +97,31 @@ class ReviewFixture:
 
 @override_settings(AI_ENABLED=False)
 class ApplicationTests(ReviewFixture, TestCase):
+    def test_matching_documents_leave_queue_and_reach_final_preview(self):
+        self.review.scope_confirmed = self.review.metadata_confirmed = False
+        self.review.save()
+        for document in self.review.documents.all():
+            path = Path("examples/pipeline-test-pack/01_matching") / (
+                f"CLEARWATER_{document.role}.docx"
+            )
+            content = path.read_bytes()
+            document.file.save(path.name, ContentFile(content), save=False)
+            document.blocks = []
+            document.save()
+        self.assertTrue(process_next())
+        self.review.refresh_from_db()
+        self.assertEqual(self.review.state, "needs_input", self.review.error)
+        self.review.scope_confirmed = self.review.metadata_confirmed = True
+        self.review.state = "queued"
+        self.review.save()
+        self.assertTrue(process_next())
+        self.review.refresh_from_db()
+        self.assertEqual(self.review.state, "ready", self.review.error)
+        self.assertEqual(self.review.findings.count(), 0)
+        page = self.client.get(reverse("guide", args=[self.review.pk]))
+        self.assertContains(page, "Final preview")
+        self.assertContains(page, "Approve final documents")
+
     def test_end_to_end_review_decision_and_export(self):
         finding = self.ready()
         self.assertEqual(self.review.findings.count(), 3)
@@ -255,7 +280,7 @@ class ApplicationTests(ReviewFixture, TestCase):
         self.assertEqual(self.review.state, "needs_input", self.review.error)
         self.assertTrue(self.review.documents.first().blocks)
         response = self.client.get(reverse("review", args=[self.review.pk]))
-        self.assertContains(response, "Are these the right versions?")
+        self.assertContains(response, "Check your document details")
         self.assertEqual(
             self.client.post(
                 reverse("confirm", args=[self.review.pk]),

@@ -1,8 +1,17 @@
 from django.urls import path
 
-from . import views
+from . import guided, views
 
 urlpatterns = [
+    path("upload/", views.upload, name="quick_upload"),
+    path("reviews/<uuid:pk>/guide/", guided.guide, name="guide"),
+    path("reviews/<uuid:pk>/guide/<int:finding_id>/", guided.review_change, name="review_change"),
+    path("reviews/<uuid:pk>/finalise/", guided.finalise, name="finalise"),
+    path(
+        "reviews/<uuid:pk>/updated/<int:doc_id>/",
+        guided.download_document,
+        name="download_document",
+    ),
     path("projects/<uuid:project_id>/members/remove/", views.remove_member, name="remove_member"),
     path("reviews/<uuid:pk>/rerun/", views.rerun, name="rerun"),
     path("", views.home, name="home"),

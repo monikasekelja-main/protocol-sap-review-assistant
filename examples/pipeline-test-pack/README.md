@@ -8,7 +8,7 @@ All trial details and source text are invented. These files contain no real part
 2. For the first test, upload `02_discrepancies/CLEARWATER_protocol.docx` as the protocol and `02_discrepancies/CLEARWATER_sap.docx` as the SAP. Upload the documents, not this README or the manifest.
 3. Let the worker extract the files. Confirm the detected version/date and supported trial scope when prompted.
 4. In local mode, expect three findings: a Week 12/Week 24 primary endpoint discrepancy, intention-to-treat/per-protocol primary analysis populations, and 120/100 planned randomised totals.
-5. Inspect both passages for each issue, record a decision, discuss the finding, preview and accept/reject a clarification, then export a DOCX report. A clarification must not alter the source quotations or silently dismiss the discrepancy.
+5. Follow the guided review: choose which passage should change, edit the replacement if needed, then accept, reject or keep a Word comment. After reviewing every issue, approve the final preview and download the updated DOCX. Alternatively, choose an uploaded reference document to download tracked proposals for review in Word. The detailed evidence/discussion workspace and separate report are still available.
 6. Run the other cases in separate reviews. Compare their outcomes using the answer key below. Do not combine files from different case folders.
 
 The web application and `python manage.py review_worker` must both be running. A review with no findings is not a pass result. Local mode only checks three narrow assertion patterns; use the coverage panel to see what was not assessed.
@@ -35,11 +35,14 @@ The scanned PDF in case 09 is deliberately different: it contains only an image 
 
 ## Record integrity checks
 
-- New findings begin **Not reviewed**, including in case 06.
-- Save **Action needed** and a note, reload, and verify persistence.
+- New findings begin **Not reviewed** in the evidence workspace, and **To review** in the guided flow, including in case 06.
+- Accept an edit, reload and revisit the issue: the replacement and decision should persist. Reject another suggestion and verify its original wording remains in the updated copy.
+- Verify that updated-document download is blocked until every issue is reviewed and the final version is approved. Changing an accepted edit must invalidate that approval.
+- Download a Word review copy and check that edits appear as native revisions and open questions as comments. For an immediate proposal-only copy, explicitly choose the uploaded protocol or SAP as the reference.
+- In the detailed evidence workspace, save **Action needed** and a note, reload, and verify persistence.
 - Preview a clarification, reject it, and verify that the review record is unchanged.
 - Preview it again and accept it; the accepted context should appear separately from documentary evidence and in the exported report.
-- Start **New run** and verify that earlier decisions remain on the earlier run, while new findings start unreviewed.
+- Start **New run** and verify that earlier decisions remain on the earlier run, while new findings start unreviewed and have no accepted document edits.
 - Open two sessions on one finding; saving a stale decision should return a conflict rather than overwriting the newer note.
 - Verify every quotation against its DOCX block/table reference or PDF page.
 - A processing failure in cases 08 or 09 must not remove records from the other cases.

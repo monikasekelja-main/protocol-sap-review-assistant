@@ -42,6 +42,8 @@ class Review(models.Model):
     lease_until = models.DateTimeField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     completed_at = models.DateTimeField(null=True)
+    finalised_revision = models.PositiveIntegerField(null=True)
+    finalised_at = models.DateTimeField(null=True)
 
     class Meta:
         ordering = ["-created_at"]
@@ -113,3 +115,19 @@ class Proposal(models.Model):
     payload = models.JSONField(default=dict)
     state = models.CharField(max_length=12, default="pending")
     created_at = models.DateTimeField(auto_now_add=True)
+
+
+class EditDecision(models.Model):
+    finding = models.OneToOneField(Finding, on_delete=models.CASCADE, related_name="edit_decision")
+    choice = models.CharField(
+        max_length=12,
+        choices=[
+            ("accepted", "Accepted"),
+            ("rejected", "Rejected"),
+            ("commented", "Comment added"),
+        ],
+    )
+    edits = models.JSONField(default=list)
+    note = models.TextField(blank=True)
+    actor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
+    updated_at = models.DateTimeField(auto_now=True)
