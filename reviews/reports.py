@@ -80,9 +80,16 @@ def export_review(review):
         "Supported scope: English-language, two-arm parallel randomised superiority trial; continuous primary endpoint at a fixed time point. Source quotations are extracted text; source documents remain unchanged."
     )
     for entry in review.coverage:
-        doc.add_paragraph(
-            f"{entry['label']}: {entry['state'].replace('_', ' ')} — {entry['reason']}"
-        )
+        doc.add_heading(f"{entry['label']}: {entry['state'].replace('_', ' ')}", 2)
+        if "local" in entry:
+            for key, label in (("local", "Local checks"), ("contextual", "Contextual AI")):
+                result = entry[key]
+                doc.add_paragraph(
+                    f"{label}: {result['state'].replace('_', ' ')} — {result['reason']}"
+                )
+                evidence(result.get("evidence", []))
+        else:
+            doc.add_paragraph(entry["reason"])
     for limitation in review.limitations:
         doc.add_paragraph(limitation, style="List Bullet")
     doc.add_heading("Processing versions", 2)

@@ -1,0 +1,7 @@
+<strong>{{ entry.label }} · {{ entry.state }}</strong>
+{% if entry.local %}
+<p><strong>Local checks · {{ entry.local.state }}</strong><br>{{ entry.local.reason }}</p>
+{% if entry.local.evidence %}<details><summary>Passages compared by local rules</summary>{% include 'reviews/evidence.html' with evidence=entry.local.evidence %}</details>{% endif %}
+<p><strong>Contextual AI · {{ entry.contextual.state }}</strong><br>{{ entry.contextual.reason }}</p>
+{% if entry.contextual.evidence %}<details><summary>Source passages for contextual coverage</summary>{% include 'reviews/evidence.html' with evidence=entry.contextual.evidence %}</details>{% endif %}
+{% else %}<p>{{ entry.reason }}</p>{% endif %}

@@ -60,6 +60,7 @@ class Coverage(StrictModel):
     check: Check
     state: Literal["assessed", "partial", "not_assessed", "not_applicable"]
     reason: str = Field(min_length=1, max_length=1500)
+    evidence: list[Citation] = Field(max_length=6)
 
 
 class ReviewOutput(StrictModel):

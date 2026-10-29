@@ -110,6 +110,7 @@ def process_next():
                 "schema": VERSION,
                 "model": settings.ANTHROPIC_MODEL if settings.AI_ENABLED else "local-rules",
                 "usage": result["usage"],
+                "review_mode": result.get("mode", "local"),
             }
             locked.state, locked.completed_at, locked.lease_token = "ready", timezone.now(), None
             locked.save()

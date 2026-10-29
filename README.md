@@ -66,7 +66,11 @@ Unzip the pack and upload one case at a time. The answer key separates local-che
 | Setup | No API key needed | Anthropic API key and model required |
 | Checks | Three narrow patterns: explicit primary endpoint timing, named primary analysis populations and stated randomised totals | Contextual review across the eight check areas in the PRD |
 | Discussion | Retrieves passages and explains existing findings | Answers questions using retrieved source evidence and recorded context |
-| Limits | Other check areas are marked unassessed | Bounded document context, extraction limitations and model uncertainty still apply |
+| Limits | Other check areas are marked unassessed; a comparable pair of statements is needed to credit a local comparison | Bounded document context, extraction limitations and model uncertainty still apply |
+
+Local checks always run. When configured, AI adds contextual review using an explicit rubric for each area and the local findings already recorded. Coverage separates the two methods and links to their source passages. An AI claim of assessment without verifiable evidence is withheld; an omitted or duplicate coverage result cannot erase local results. If the AI request fails, the app preserves local findings and clearly marks contextual review incomplete.
+
+See [the assessment guide](docs/ASSESSMENT.md) for the division of work, coverage meanings and evaluation limits. Existing reviews keep their original results; start a new run to use updated checks.
 
 To enable AI, export `ANTHROPIC_API_KEY` and `ANTHROPIC_MODEL` in **both** the web and worker environments, then start a new review run. Choose a model that supports structured outputs. The provider receives extracted text and selected discussion context, so check your authorisation and its processing terms first.
 
