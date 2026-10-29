@@ -1,0 +1,5 @@
+{% load static %}<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>{% block title %}Protocol & SAP Review{% endblock %}</title><link rel="stylesheet" href="{% static 'reviews/app.css' %}?v=20261029-warm">{% block head %}{% endblock %}</head>
+<body><a class="skip" href="#main">Skip to content</a><header class="topbar"><a class="brand" href="{% url 'home' %}"><span class="brand-icon">≋</span> Trialwork<span class="brand-sub">Protocol & SAP review</span></a><div class="account"><span class="pilot">Research preview</span>{% if user.is_authenticated %}<span>{{ user.username }}</span><form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="text-button">Sign out</button></form>{% endif %}</div></header>
+<main id="main">{% for message in messages %}<div class="toast {{ message.tags }}" role="status">{{ message }}</div>{% endfor %}{% block content %}{% endblock %}</main>
+<footer>Evidence first. Decisions stay with your team.<span>Public, synthetic and authorised redacted documents only · No patient-level records</span></footer></body></html>

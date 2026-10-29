@@ -1,0 +1,9 @@
+.git
+.venv
+.env
+.env.*
+private-data
+*.sqlite3
+__pycache__
+.ruff_cache
+staticfiles
