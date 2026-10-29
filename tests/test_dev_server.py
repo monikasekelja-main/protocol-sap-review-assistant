@@ -1,6 +1,7 @@
 import os
 from unittest.mock import patch
 
+from django.core.management import get_commands, load_command_class
 from django.test import SimpleTestCase, override_settings
 
 from reviews.management.commands.runserver import Command
@@ -8,6 +9,14 @@ from reviews.management.commands.runserver import Command
 
 @override_settings(DEBUG=True)
 class DevelopmentServerTests(SimpleTestCase):
+    def test_django_resolves_runserver_to_worker_enabled_command(self):
+        app = get_commands()["runserver"]
+        self.assertEqual(app, "reviews")
+        command = load_command_class(app, "runserver")
+        self.assertIsInstance(command, Command)
+        options = command.create_parser("manage.py", "runserver").parse_args([])
+        self.assertFalse(options.no_worker)
+
     @patch.dict(os.environ, {"RUN_MAIN": "false"})
     @patch("reviews.management.commands.runserver.subprocess.Popen")
     @patch("reviews.management.commands.runserver.Runserver.handle")
