@@ -10,6 +10,20 @@ Local checks cover only three narrow assertion patterns. Contextual AI provides 
 
 Originals and extraction results are immutable per review run after confirmation. The confirm step records user-supplied metadata without changing source bytes. Each rerun copies source references into a new run; it never migrates old decisions. Parser, catalogue, prompt, schema and model versions are recorded; bump `reviews.pipeline.VERSION` whenever their behavior changes.
 
+## Guided document editing
+
+The default entry point is now a direct document upload followed by a guided issue queue. `EditDecision` stores an explicit accepted/rejected/commented decision, exact original source ranges, replacement text, actor and note. These editing decisions are separate from the older finding-status fields. Original uploads remain immutable. Review reports include the editing decisions and notes.
+
+DOCX editing resolves extracted block locations against the actual original package and verifies its SHA-256. Simple paragraphs can receive source-range replacements, including text spanning multiple formatted runs. Unchanged runs and package members are retained. Overlapping edits, stale decisions, incorrect source hashes and unsupported structures are blocked. Table rows, hyperlinks, fields and existing annotated paragraphs are comment-only when safe replacement cannot be established. This is deliberately not a complete Word editor.
+
+For discrepancies, alternative wording is taken from the compared passage. The user explicitly chooses one replacement direction and can edit it. The application does not infer which scientific statement is authoritative, automatically update every related definition, or verify that the resulting study design is coherent. Pending issues become comments in neutral Word review copies. Alternatively, a user can explicitly choose a reference document for export-only cross-document proposals. Unreviewed discrepancies with a single unambiguous compared quote can then become tracked edits in the other document. These proposals are validated against source locations and overlaps, do not create saved decisions, and remain subject to acceptance in Word. Unsafe or ambiguous replacements remain comments.
+
+A final approval requires every issue to have an editing decision and every accepted edit to remain valid. Approval is bound to the review revision. Updated downloads are blocked before approval and after any subsequent record change until reapproval. Word review copies can be downloaded earlier. Updated copies apply accepted edits and retain questions chosen as comments; Word review copies encode selected edits as native `w:ins`/`w:del` revisions and anchor open questions through comments relationships and ranges. Existing comments and unrelated package parts are preserved. No working draft or download cache is stored on the server; generated copies are built in memory and deletion of a project cascades to editing decisions.
+
+PDF uploads remain review-only for source editing. PDF notes are retained in the separate report; they cannot be embedded into an original DOCX that was never supplied. Revised-document re-import with unresolved tracked changes remains unsupported. Accept or reject revisions in Word before submitting the revised document as a new run.
+
+The original PRD excluded source editing; this workflow implements the user's subsequent scope change. Expert evaluation and usability release gates still apply, and the revised workflow has not been tested with real clinical users.
+
 ## Processes and recovery
 
 Run the web process and `python manage.py review_worker` against the same database and private filesystem. One SQLite worker only. PostgreSQL workers claim with `SELECT FOR UPDATE SKIP LOCKED`, then compare-and-set the queued state. Jobs have a ten-minute lease and fence publication with a unique token. Parsing and model requests have shorter bounded timeouts. An expired job is marked failed when a worker polls; retry from the UI starts a new run. There is no automatic repeated provider billing or infinite retry loop.

@@ -67,17 +67,27 @@ def create_project(request):
 
 
 @login_required
-def upload(request, project_id):
-    project = get_object_or_404(Project, pk=project_id, members=request.user, deleting=False)
+def upload(request, project_id=None):
+    project = (
+        get_object_or_404(Project, pk=project_id, members=request.user, deleting=False)
+        if project_id
+        else None
+    )
     form = UploadForm(request.POST or None, request.FILES or None)
     if request.method == "POST" and form.is_valid():
         saved = []
         try:
             with transaction.atomic():
                 # Serialise with deletion, preventing a new upload from escaping its file inventory.
-                get_object_or_404(
-                    Project.objects.select_for_update(), pk=project.pk, deleting=False
-                )
+                if project is None:
+                    project = Project.objects.create(
+                        name=form.cleaned_data["title"], owner=request.user
+                    )
+                    project.members.add(request.user)
+                else:
+                    get_object_or_404(
+                        Project.objects.select_for_update(), pk=project.pk, deleting=False
+                    )
                 review = Review.objects.create(project=project, title=form.cleaned_data["title"])
                 for role in ("protocol", "sap"):
                     file = form.cleaned_data.get(role)
@@ -98,7 +108,7 @@ def upload(request, project_id):
                     )
                     saved.append(doc.file)
                     doc.save()
-            return redirect("review", review.pk)
+            return redirect("guide", review.pk)
         except Exception:
             for file in saved:
                 file.delete(save=False)
@@ -164,7 +174,7 @@ def confirm(request, pk):
             messages.error(
                 request, "Confirm document metadata and the supported trial scope to continue."
             )
-            return redirect("review", pk)
+            return redirect("guide", pk)
         for doc in review.documents.all():
             meta = {
                 key: request.POST.get(f"{doc.pk}_{key}", "").strip()[:200] or "Unknown"
@@ -184,7 +194,7 @@ def confirm(request, pk):
                 "metadata": "confirmed",
             },
         )
-    return redirect("review", pk)
+    return redirect("guide", pk)
 
 
 @login_required
@@ -493,7 +503,7 @@ def rerun(request, pk):
         Event.objects.create(
             review=new, actor=request.user, kind="rerun", payload={"previous_run": str(original.pk)}
         )
-    return redirect("review", new.pk)
+    return redirect("guide", new.pk)
 
 
 @login_required

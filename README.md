@@ -4,21 +4,25 @@ A practical second look at your clinical trial documents.
 
 A protocol says **Week 12**. The statistical analysis plan says **Week 24**. Which one does the team intend?
 
-This application helps trial managers, investigators and statisticians find those conflicting details, read the evidence side by side, and keep a record of what they decide. Upload a protocol and an optional statistical analysis plan (SAP), review the findings, and export a report for your team.
+Upload a protocol and an optional statistical analysis plan (SAP), then work through the proposed changes one at a time. Accept, edit or reject each suggestion, approve the final version, and download your updated Word documents. You can also take a review copy into Word, with native tracked changes and comments for the team.
 
-![Findings alongside the protocol and SAP passages that support them](docs/images/review-workspace.png)
+![Guided review with editable wording and accept or reject controls](docs/images/guided-review.png)
 
 **Research preview.** You can try the complete workflow with synthetic documents and no API key. Broader AI review is optional. Use public, synthetic or explicitly authorised redacted documents; confidential partner material and patient-level records are outside this preview.
 
-## From documents to decisions
+## From upload to your next draft
 
-1. **Upload and confirm.** Add a DOCX or text-based PDF protocol, plus a SAP if you have one. Check the detected document versions and trial scope.
-2. **Review the findings.** Start with up to five prioritised issues. Each includes source passages, why it matters, and a suggested next step.
-3. **Inspect and discuss.** Follow a quotation back to its source location or ask about the selected finding. AI discussion requires provider configuration.
-4. **Record a decision.** Mark a finding *Action needed*, *Needs discussion* or *Dismissed*, and add a team note. Proposed changes from discussion require explicit acceptance.
-5. **Take the record with you.** Export a DOCX report containing the summary, findings, evidence, decisions and coverage limitations.
+1. **Upload your DOCX.** Add a protocol and an optional SAP. You can start directly from the home page without creating a project first.
+2. **Review one issue at a time.** See the source passages and alternative wording. When sources conflict, you choose which passage should change; the app does not decide the correct trial detail for you.
+3. **Accept, edit or reject.** Adjust the replacement text before accepting, reject the suggestion, or leave a question as a Word comment. Next takes you to the following issue, and you can revisit any decision.
+4. **Approve the final preview.** Check the accepted edits, rejected suggestions and remaining comments. Changing a decision invalidates that approval until you approve the new version.
+5. **Download the updated document.** Accepted edits are applied to a copy of the original DOCX. Untouched package parts and surrounding text formatting are preserved. Questions kept as comments remain in the copy.
 
-Your original documents stay unchanged. A new review run keeps earlier findings and decisions intact.
+**Prefer to work in Word?** Download a Word review copy at any point. Selected edits appear as native tracked insertions and deletions; open questions appear as anchored comments. Without a selected direction, unresolved discrepancies receive comments. You can also choose the protocol or SAP as a reference to export proposed cross-document edits immediately, without stepping through each issue in the app. These export-only suggestions do not create accepted decisions. Word reviewers can accept or reject them using Word's own review controls.
+
+Table rows and complex passages that cannot be edited safely in the app can receive comments. PDF uploads still support evidence review and reports, but an original DOCX is required for updated-document downloads; the app does not reconstruct a Word original from a PDF. The existing evidence workspace, discussion and separate DOCX review report remain available.
+
+Your original uploads stay unchanged. Updated documents are not independently validated trial designs: check related definitions, schedule entries and assumptions before approving the next draft.
 
 ## Try it locally
 

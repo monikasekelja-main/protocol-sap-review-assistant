@@ -255,7 +255,7 @@ class ApplicationTests(ReviewFixture, TestCase):
         self.assertEqual(self.review.state, "needs_input", self.review.error)
         self.assertTrue(self.review.documents.first().blocks)
         response = self.client.get(reverse("review", args=[self.review.pk]))
-        self.assertContains(response, "Are these the right versions?")
+        self.assertContains(response, "Check your document details")
         self.assertEqual(
             self.client.post(
                 reverse("confirm", args=[self.review.pk]),

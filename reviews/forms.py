@@ -4,9 +4,12 @@ from .models import STATUSES
 
 
 class UploadForm(forms.Form):
-    title = forms.CharField(max_length=160, label="Review name")
-    protocol = forms.FileField(label="Protocol · DOCX or text PDF")
+    protocol = forms.FileField(
+        label="Protocol",
+        help_text="Use DOCX to download an updated Word document. Text PDFs support review only.",
+    )
     sap = forms.FileField(required=False, label="Statistical analysis plan · optional")
+    title = forms.CharField(max_length=160, required=False, label="Review name (optional)")
     authorised = forms.BooleanField(
         label="These are public, synthetic, or authorised redacted study documents. They contain no patient-level records or confidential partner material."
     )
@@ -20,6 +23,10 @@ class UploadForm(forms.Form):
                 or not upload.name.lower().endswith((".pdf", ".docx"))
             ):
                 self.add_error(name, "Use a DOCX or text PDF smaller than 25 MB.")
+        if not data.get("title") and data.get("protocol"):
+            from pathlib import Path
+
+            data["title"] = Path(data["protocol"].name).stem.replace("_", " ")[:160]
         return data
 
 

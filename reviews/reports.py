@@ -57,6 +57,15 @@ def export_review(review):
         doc.add_paragraph(f"Suggested action: {finding.action}")
         evidence(finding.evidence)
         doc.add_paragraph(f"Team note: {finding.note or 'None recorded'}")
+        if hasattr(finding, "edit_decision"):
+            decision = finding.edit_decision
+            doc.add_paragraph(f"Document edit review: {decision.get_choice_display()}")
+            if decision.note:
+                doc.add_paragraph(f"Editing note: {decision.note}")
+            for edit in decision.edits:
+                doc.add_paragraph(
+                    f"Accepted edit in {edit['name']}:\nOriginal: {edit['quote']}\nReplacement: {edit['after']}"
+                )
     if not review.findings.exists():
         doc.add_paragraph(
             "No supported findings were produced. This is not a pass result; see coverage limitations."
