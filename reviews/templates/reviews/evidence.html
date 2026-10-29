@@ -1,0 +1,1 @@
+{% for item in evidence %}<figure class="evidence"><figcaption><span class="doc-label">{{ item.name }} · v{{ item.version }}</span><a href="{% url 'document' review.pk item.document_id %}#{{ item.block_id }}">{{ item.location }}</a></figcaption><blockquote>{{ item.quote }}</blockquote></figure>{% endfor %}

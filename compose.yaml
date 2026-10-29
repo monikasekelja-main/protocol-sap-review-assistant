@@ -1,0 +1,43 @@
+x-app: &app
+  build: .
+  environment: &env
+    DEBUG: "1"
+    ALLOWED_HOSTS: localhost,127.0.0.1
+    SECRET_KEY: ${SECRET_KEY:?Set SECRET_KEY in .env before starting Compose}
+    DATABASE_URL: postgresql://review:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}@db:5432/review
+    DB_SSLMODE: disable
+    ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+    ANTHROPIC_MODEL: ${ANTHROPIC_MODEL:-}
+  volumes:
+    - documents:/app/private-data
+  depends_on:
+    db:
+      condition: service_healthy
+  init: true
+  cap_drop: [ALL]
+  security_opt: [no-new-privileges:true]
+  mem_limit: 2g
+services:
+  db:
+    image: postgres:17-bookworm
+    environment:
+      POSTGRES_DB: review
+      POSTGRES_USER: review
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    volumes:
+      - database:/var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U review -d review"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+  web:
+    <<: *app
+    command: [.venv/bin/python, manage.py, runserver, "0.0.0.0:8000", --noreload]
+    ports: ["127.0.0.1:8000:8000"]
+  worker:
+    <<: *app
+    command: [.venv/bin/python, manage.py, review_worker]
+volumes:
+  database:
+  documents:
