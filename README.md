@@ -1,14 +1,28 @@
 # Protocol and SAP Review Assistant
 
-An evidence-linked workspace for reviewing a clinical trial protocol and optional statistical analysis plan. Upload DOCX/text PDF, confirm versions and scope, inspect prioritised findings with source passages, discuss the evidence, record decisions, and export a DOCX report.
+A practical second look at your clinical trial documents.
 
-**Status: working research preview for public, synthetic or explicitly authorised redacted documents.** Confidential partner material and patient-level records are not accepted. This implementation has not met the PRD's expert-evaluation or clinical usability release gates.
+A protocol says **Week 12**. The statistical analysis plan says **Week 24**. Which one does the team intend?
 
-![Review workspace with source evidence](docs/images/review-workspace.png)
+This application helps trial managers, investigators and statisticians find those conflicting details, read the evidence side by side, and keep a record of what they decide. Upload a protocol and an optional statistical analysis plan (SAP), review the findings, and export a report for your team.
 
-## Run locally
+![Findings alongside the protocol and SAP passages that support them](docs/images/review-workspace.png)
 
-Requires Python 3.12+ and [uv](https://docs.astral.sh/uv/getting-started/installation/).
+**Research preview.** You can try the complete workflow with synthetic documents and no API key. Broader AI review is optional. Use public, synthetic or explicitly authorised redacted documents; confidential partner material and patient-level records are outside this preview.
+
+## From documents to decisions
+
+1. **Upload and confirm.** Add a DOCX or text-based PDF protocol, plus a SAP if you have one. Check the detected document versions and trial scope.
+2. **Review the findings.** Start with up to five prioritised issues. Each includes source passages, why it matters, and a suggested next step.
+3. **Inspect and discuss.** Follow a quotation back to its source location or ask about the selected finding. AI discussion requires provider configuration.
+4. **Record a decision.** Mark a finding *Action needed*, *Needs discussion* or *Dismissed*, and add a team note. Proposed changes from discussion require explicit acceptance.
+5. **Take the record with you.** Export a DOCX report containing the summary, findings, evidence, decisions and coverage limitations.
+
+Your original documents stay unchanged. A new review run keeps earlier findings and decisions intact.
+
+## Try it locally
+
+You need **Python 3.12+** and [uv](https://docs.astral.sh/uv/getting-started/installation/). From the repository directory:
 
 ```sh
 uv sync --frozen
@@ -18,38 +32,60 @@ uv run python manage.py review_worker --once
 uv run python manage.py runserver 127.0.0.1:8000
 ```
 
-Open [localhost:8000](http://127.0.0.1:8000) and sign in with username `demo` and the generated password printed by `seed_demo`. It creates a synthetic study with three planted discrepancies. Re-running the command preserves the account password and existing review. For a password reset use `uv run python manage.py changepassword demo`.
+Open **[localhost:8000](http://127.0.0.1:8000)**. Sign in as `demo` using the generated password printed by `seed_demo`. The demo includes a synthetic study with three deliberate discrepancies.
 
-For uploaded documents and reruns, keep the worker running in a **second terminal**:
+To process uploads and new runs, leave the worker running in a **second terminal**:
 
 ```sh
 uv run python manage.py review_worker
 ```
 
-A new upload extracts first, asks you to confirm metadata and supported trial scope, then runs checks in the background. Reruns create separate review records and preserve earlier decisions. SQLite is a local convenience; use exactly one local worker.
+Local development uses SQLite and one worker. Running `seed_demo` again preserves the existing account and review. To reset its password:
 
-Create real pilot accounts using `uv run python manage.py createsuperuser`, then manage users at `/admin/`. Project owners add existing accounts from project settings. There is no public signup.
+```sh
+uv run python manage.py changepassword demo
+```
 
-## Review modes
+## Documents to test with
 
-**Local mode (default):** works without API credentials. It compares explicit matching primary endpoint statements with different times, named primary analysis populations, and stated total randomised sample sizes. It retrieves source passages for discussion and explains existing findings. It does not perform open-ended clinical interpretation, and explicitly marks the other five check areas unassessed. Summary excerpts link back to source evidence.
+[Download the example pack](examples/pipeline-test-pack.zip) or read the [case guide and expected results](examples/pipeline-test-pack/README.md).
 
-**AI mode:** set both `ANTHROPIC_API_KEY` and `ANTHROPIC_MODEL` in the web and worker environments, then start a new run. Choose a currently available model that supports structured outputs; no model is silently selected. AI reviews all eight check areas using bounded supplied content, with exact quotation validation and per-check coverage. Discussion retrieves evidence within the selected run. Failed or unsupported AI responses do not silently fall back to a complete-looking review. The provider receives extracted source text and selected conversation context, so verify its terms and your authorisation first.
+It contains **13 DOCX files and 3 PDFs**, covering matching documents, deliberate discrepancies, equivalent wording, a protocol-only review, contextual questions, embedded instructions and unsupported inputs.
 
-Environment variables are documented in [.env.example](.env.example). Django does **not** auto-load this file. Export variables in the shell or use your process manager. Docker Compose reads `.env` itself.
+Start with the pair in **`02_discrepancies`**. Local mode should flag:
 
-## What is implemented
+- A primary assessment at Week 12 versus Week 24.
+- Intention-to-treat versus per-protocol primary analysis populations.
+- A planned randomised total of 120 versus 100 participants.
 
-- Invite-only authentication and project membership; private source storage and authorised downloads.
-- Bounded file validation/extraction with hashes, version confirmation, PDF physical-page coordinates and stable DOCX block/table locations.
-- Background processing with claims, lease fencing, immutable runs and atomic finding publication.
-- Evidence-linked summary, up to five initial findings, remaining findings, all eight coverage records and specific extraction limitations.
-- Persistent decisions and notes with stale-write detection and audit history.
-- Finding-specific and general discussion; explicit accept/reject for clarification, decision and new-finding proposals.
-- DOCX export of accepted state, citations, decisions, notes, clarifications, processing versions and coverage; original files unchanged.
-- Project deletion covering source files, extractions, conversations and review records, including retry after file-removal failure.
+Unzip the pack and upload one case at a time. The answer key separates local-check expectations from cases that need AI review.
 
-## Validation
+## Choose the review mode
+
+| | Local checks | AI review |
+| --- | --- | --- |
+| Setup | No API key needed | Anthropic API key and model required |
+| Checks | Three narrow patterns: explicit primary endpoint timing, named primary analysis populations and stated randomised totals | Contextual review across the eight check areas in the PRD |
+| Discussion | Retrieves passages and explains existing findings | Answers questions using retrieved source evidence and recorded context |
+| Limits | Other check areas are marked unassessed | Bounded document context, extraction limitations and model uncertainty still apply |
+
+To enable AI, export `ANTHROPIC_API_KEY` and `ANTHROPIC_MODEL` in **both** the web and worker environments, then start a new review run. Choose a model that supports structured outputs. The provider receives extracted text and selected discussion context, so check your authorisation and its processing terms first.
+
+See [.env.example](.env.example) for configuration. Django does not automatically load `.env`; Docker Compose does.
+
+## What it is designed to review
+
+The current scope is English-language, two-arm parallel-group randomised superiority trials with a continuous primary endpoint at a fixed time point. Files can be DOCX or text-based PDF, up to 25 MB each and 250 PDF pages. Scans and unresolved tracked changes are unsupported.
+
+Findings are issues and questions for your team, not a verdict on the trial. Quotations are checked against extracted source text, and incomplete checks are disclosed. No findings does **not** mean a trial has passed review.
+
+The preview has not completed the PRD's expert evaluation or unaided usability release gates. Live AI calls are mocked in automated tests. See [operations and remaining work](docs/OPERATIONS.md) for the practical limits.
+
+## Development and setup
+
+The application uses **Django**, server-rendered pages, a separate background worker and private file storage. SQLite makes local setup easy; PostgreSQL is supported for shared environments.
+
+Run the checks:
 
 ```sh
 uv run ruff check .
@@ -58,11 +94,14 @@ uv run python manage.py makemigrations --check --dry-run
 uv run python manage.py test
 ```
 
-Tests generate their own synthetic files. CI runs the suite on SQLite and PostgreSQL and checks deployment settings. Live AI calls are mocked in tests and require a separately authorised evaluation. See [operations and limitations](docs/OPERATIONS.md) before deploying.
+GitHub CI runs the tests on SQLite and PostgreSQL and checks deployment settings. The test suite includes the upload-ready example documents.
 
-## Docker development
+There is no public signup. Create an administrator with `uv run python manage.py createsuperuser`, then manage accounts at `/admin/`. Project owners can grant or revoke access for existing accounts and delete their project's files and review records.
 
-Create a local `.env` containing strong `SECRET_KEY` and URL-safe `POSTGRES_PASSWORD` values, then:
+<details>
+<summary><strong>Run with Docker Compose</strong></summary>
+
+Create a local `.env` with a strong `SECRET_KEY` and a URL-safe `POSTGRES_PASSWORD`, then run:
 
 ```sh
 docker compose build
@@ -71,12 +110,14 @@ docker compose run --rm web .venv/bin/python manage.py seed_demo
 docker compose up
 ```
 
-This binds the development web server to loopback and persists PostgreSQL and private files in volumes. It is not a confidential-data production deployment. The image also provides a Gunicorn entrypoint; supply a TLS reverse proxy/static server and verified data controls for any hosted pilot.
+Compose runs a local web server, worker and PostgreSQL database, with persistent volumes for the database and private files. It binds the web server to loopback. Hosted deployment needs TLS, static-file serving and the data controls described in the [operations guide](docs/OPERATIONS.md).
 
-## Product documents
+</details>
 
-- [Original PRD](docs/PRD.md)
-- [PRD review](docs/PRD-REVIEW.md)
-- [Architecture plan](docs/BUILD-PLAN.md)
-- [Delivery backlog](docs/BACKLOG.md)
-- [Implementation status and operations](docs/OPERATIONS.md)
+## Project notes
+
+- [Product requirements](docs/PRD.md) — the intended experience and release gates.
+- [PRD review](docs/PRD-REVIEW.md) — assumptions and decisions to confirm.
+- [Build plan](docs/BUILD-PLAN.md) — architecture and implementation approach.
+- [Delivery backlog](docs/BACKLOG.md) — milestones and acceptance criteria.
+- [Operations guide](docs/OPERATIONS.md) — current behavior, configuration and remaining work.
