@@ -1,0 +1,176 @@
+[
+  {
+    "id": "01_matching",
+    "description": "Matching protocol and SAP",
+    "files": [
+      {
+        "path": "01_matching/CLEARWATER_protocol.docx",
+        "role": "protocol",
+        "sha256": "d607c86a06217288aac4451b628d787873a9c17a39a9569a19f2020e1c3491a3"
+      },
+      {
+        "path": "01_matching/CLEARWATER_sap.docx",
+        "role": "sap",
+        "sha256": "ea8c83262274e2a334b4a8dc1e92379aece00b32a027e78b27ee5dd827fd104d"
+      }
+    ],
+    "expected_local_checks": [],
+    "expected_state": "ready"
+  },
+  {
+    "id": "02_discrepancies",
+    "description": "Three explicit discrepancies",
+    "files": [
+      {
+        "path": "02_discrepancies/CLEARWATER_protocol.docx",
+        "role": "protocol",
+        "sha256": "d607c86a06217288aac4451b628d787873a9c17a39a9569a19f2020e1c3491a3"
+      },
+      {
+        "path": "02_discrepancies/CLEARWATER_sap.docx",
+        "role": "sap",
+        "sha256": "c0a55f429e49c875df2851de9b7033f06f190a543836d1657844112fc8464d35"
+      }
+    ],
+    "expected_local_checks": [
+      "endpoint",
+      "population",
+      "sample_size"
+    ],
+    "expected_state": "ready"
+  },
+  {
+    "id": "03_protocol_only",
+    "description": "Internal endpoint inconsistency",
+    "files": [
+      {
+        "path": "03_protocol_only/CLEARWATER_protocol.docx",
+        "role": "protocol",
+        "sha256": "ccaffe006aa456d45bc67bb4b8ba9176d339fd7bbc3a4c3c8a488ec6ca7f4b2c"
+      }
+    ],
+    "expected_local_checks": [
+      "endpoint"
+    ],
+    "expected_state": "ready"
+  },
+  {
+    "id": "04_equivalent_wording",
+    "description": "Equivalent timing and harmless wording",
+    "files": [
+      {
+        "path": "04_equivalent_wording/CLEARWATER_protocol.docx",
+        "role": "protocol",
+        "sha256": "d607c86a06217288aac4451b628d787873a9c17a39a9569a19f2020e1c3491a3"
+      },
+      {
+        "path": "04_equivalent_wording/CLEARWATER_sap.docx",
+        "role": "sap",
+        "sha256": "3f6a1fb90d639c3bcfdc7f262f165f58c357a3770fcb278985db91b0ff8e69e0"
+      }
+    ],
+    "expected_local_checks": [],
+    "expected_state": "ready"
+  },
+  {
+    "id": "05_contextual_questions",
+    "description": "Schedule and treatment change contradictions",
+    "files": [
+      {
+        "path": "05_contextual_questions/CLEARWATER_protocol.docx",
+        "role": "protocol",
+        "sha256": "0d8f610ca162d86e11cf4072ee77df276372f9792bf7bd2b640048aaa8c83f64"
+      },
+      {
+        "path": "05_contextual_questions/CLEARWATER_sap.docx",
+        "role": "sap",
+        "sha256": "1f3a31cc89b043f8cd6dc7fd9f34e234764cfa909829d1adc7051bdf2c6bd979"
+      }
+    ],
+    "expected_local_checks": [],
+    "expected_state": "ready"
+  },
+  {
+    "id": "06_instruction_injection",
+    "description": "Instructions embedded in source text",
+    "files": [
+      {
+        "path": "06_instruction_injection/CLEARWATER_protocol.docx",
+        "role": "protocol",
+        "sha256": "d607c86a06217288aac4451b628d787873a9c17a39a9569a19f2020e1c3491a3"
+      },
+      {
+        "path": "06_instruction_injection/CLEARWATER_sap.docx",
+        "role": "sap",
+        "sha256": "ac12d59085a9cd55f0c2ae7c8125454526cca3319d95a763234732d12228070a"
+      }
+    ],
+    "expected_local_checks": [
+      "endpoint",
+      "population",
+      "sample_size"
+    ],
+    "expected_state": "ready"
+  },
+  {
+    "id": "07_unsupported_design",
+    "description": "Unsupported crossover design",
+    "files": [
+      {
+        "path": "07_unsupported_design/CLEARWATER_protocol.docx",
+        "role": "protocol",
+        "sha256": "31597c009bff4d212f5ca8ee6769c02a0f63630ac9bc543d8616ae486abdf8ab"
+      }
+    ],
+    "expected_local_checks": [],
+    "expected_state": "unsupported"
+  },
+  {
+    "id": "08_tracked_changes",
+    "description": "Unresolved tracked insertion",
+    "files": [
+      {
+        "path": "08_tracked_changes/CLEARWATER_protocol.docx",
+        "role": "protocol",
+        "sha256": "c9ba5fa8d3f1214a1f5dd66012f5424761f4377b81007566eef4d1d341396ca9"
+      }
+    ],
+    "expected_local_checks": [],
+    "expected_state": "failed"
+  },
+  {
+    "id": "02_discrepancies_pdf",
+    "description": "Text PDF versions of the three-discrepancy pair",
+    "files": [
+      {
+        "path": "02_discrepancies/pdf/CLEARWATER_protocol.pdf",
+        "role": "protocol",
+        "sha256": "7831b1b483d7858ff7bfe7bff5cb9615a580b70882db98ee02eee08f7f5c4bde"
+      },
+      {
+        "path": "02_discrepancies/pdf/CLEARWATER_sap.pdf",
+        "role": "sap",
+        "sha256": "2a9a375f214f891c50d7a7aed7ace7c912079124990410736ae33c0fbe274148"
+      }
+    ],
+    "expected_local_checks": [
+      "endpoint",
+      "population",
+      "sample_size"
+    ],
+    "expected_state": "ready"
+  },
+  {
+    "id": "09_scanned_pdf",
+    "description": "Readable image-only PDF without text layer",
+    "files": [
+      {
+        "path": "09_scanned_pdf/CLEARWATER_protocol_scanned.pdf",
+        "role": "protocol",
+        "sha256": "cd255917b0a1d576fadb47298b28c488ad21cbb8ed4138131840770031ce3c29"
+      }
+    ],
+    "expected_local_checks": [],
+    "expected_state": "failed"
+  }
+]

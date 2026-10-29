@@ -49,6 +49,10 @@ Environment variables are documented in [.env.example](.env.example). Django doe
 - DOCX export of accepted state, citations, decisions, notes, clarifications, processing versions and coverage; original files unchanged.
 - Project deletion covering source files, extractions, conversations and review records, including retry after file-removal failure.
 
+## Upload-ready test documents
+
+Download [the synthetic test pack](examples/pipeline-test-pack.zip), or browse [the case folders and answer key](examples/pipeline-test-pack/README.md). It contains matching and conflicting protocol/SAP pairs, protocol-only and harmless-wording cases, contextual AI cases, embedded-instruction testing, and unsupported-input fixtures. Start with case 02 to exercise three explicit local discrepancies.
+
 ## Validation
 
 ```sh
